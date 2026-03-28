@@ -62,3 +62,18 @@ This document serves as the structural map for the CollabCode backend. It explai
 - **Role:** Handles the "Registration" and "Login" flow.
 - **Key Logic:** It acts as the bridge between raw user input and the Security context. It is the only place where we explicitly call the `AuthenticationManager` to verify credentials.
 - **Validation:** Uses Jakarta Validation to ensure data integrity before touching the database.
+
+### 🔑 `AuthenticationService` (The Processing Plant)
+**The Business Logic of Identity.**
+- **Registration:** Orchestrates the flow: Validate Input ➡️ Hash Password ➡️ Save to DB ➡️ Issue JWT.
+- **Authentication:** The "Judge" that uses `AuthenticationManager` to verify credentials before granting a token.
+
+### 📦 `DTOs` (Data Transfer Objects)
+**The Contract between Frontend and Backend.**
+- **Role:** Uses Java Records for immutability and Jakarta Validation to reject "bad data" (like weak passwords or invalid emails) before it ever touches your database.
+
+### 🏠 `Room` Entity & `RoomService`
+**The Workspace Foundation.**
+- **Identity:** Uses **UUID v4** to prevent URL guessing and enumeration attacks.
+- **Ownership:** Strictly enforced via `SecurityContextHolder`. A room is permanently linked to the `User` who created it.
+- **Data Integrity:** Uses `RoomResponse` DTOs to hide internal database IDs of users, exposing only the `ownerEmail` to the frontend.
