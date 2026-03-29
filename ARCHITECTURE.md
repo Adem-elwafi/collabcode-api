@@ -77,3 +77,8 @@ This document serves as the structural map for the CollabCode backend. It explai
 - **Identity:** Uses **UUID v4** to prevent URL guessing and enumeration attacks.
 - **Ownership:** Strictly enforced via `SecurityContextHolder`. A room is permanently linked to the `User` who created it.
 - **Data Integrity:** Uses `RoomResponse` DTOs to hide internal database IDs of users, exposing only the `ownerEmail` to the frontend.
+### 📡 `WebSocketConfig` & `JwtChannelInterceptor`
+**The Real-Time Nervous System.**
+- **Protocol:** STOMP over WebSockets with SockJS fallback for high compatibility.
+- **Security:** JWTs are validated at the **Protocol Level** via a `ChannelInterceptor` during the handshake, ensuring no unauthenticated "pipes" are opened.
+- **Messaging:** Uses `/topic` for room-wide broadcasts (code sync) and `/app` for server-side processing.

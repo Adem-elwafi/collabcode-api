@@ -6,9 +6,13 @@ import lombok.Builder;
 public record SocketMessage(
         String sender,
         String content,
+        String roomId, // Added to identify which room the message belongs to
         MessageType type
 ) {
     public enum MessageType {
-        JOIN, LEAVE, CHAT, CODE_UPDATE
+        JOIN,
+        LEAVE,
+        CHAT,
+        CODE_UPDATE
     }
 }
