@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: collabcode-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: collabcode_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: maven:3.9.9-eclipse-temurin-21
+    container_name: collabcode-api
+    restart: unless-stopped
+    working_dir: /workspace/collabcode-api
+    volumes:
+      - ./collabcode-api:/workspace/collabcode-api
+      - maven_cache:/root/.m2
+    command: mvn spring-boot:run
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/collabcode_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: node:20-alpine
+    container_name: collabcode-ui
+    restart: unless-stopped
+    working_dir: /workspace/collabcode-ui
+    volumes:
+      - ./collabcode-ui:/workspace/collabcode-ui
+      - ui_node_modules:/workspace/collabcode-ui/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  mysql_data:
+  maven_cache:
+  ui_node_modules:
