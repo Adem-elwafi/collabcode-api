@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import type { OnChange } from '@monaco-editor/react';
 import WebSocketService from '../services/WebSocketService';
+import Breadcrumbs from './Breadcrumbs';
 
 interface Props {
   roomId: string;
@@ -84,19 +85,22 @@ const CodeEditor: React.FC<Props> = ({ roomId, token, onUsersChange, onSaveStatu
 
   return (
     <div className="codeEditorShell">
-      <Editor
-        height="100%"
-        defaultLanguage="javascript"
-        theme="vs-dark"
-        value={code}
-        onChange={handleEditorChange}
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          fontFamily: 'JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace',
-          automaticLayout: true,
-        }}
-      />
+      <Breadcrumbs roomId={roomId} filePath="projects/collabcode/main.ts" />
+      <div className="codeEditorShell__editor">
+        <Editor
+          height="100%"
+          defaultLanguage="javascript"
+          theme="vs-dark"
+          value={code}
+          onChange={handleEditorChange}
+          options={{
+            minimap: { enabled: false },
+            fontSize: 14,
+            fontFamily: 'JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace',
+            automaticLayout: true,
+          }}
+        />
+      </div>
     </div>
   );
 };

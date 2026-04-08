@@ -18,7 +18,7 @@ const UserList: React.FC<Props> = ({ users, currentUser }) => {
   const allUsers = Array.from(new Set([currentUser, ...users]));
 
   return (
-    <aside className="userList">
+    <section className="userList" aria-label="Active users">
       <div className="userList__titleRow">
         <Users size={15} className="userList__titleIcon" aria-hidden="true" />
         <span className="userList__title">Active Users</span>
@@ -38,7 +38,7 @@ const UserList: React.FC<Props> = ({ users, currentUser }) => {
           );
         })}
       </ul>
-    </aside>
+    </section>
   );
 };
 

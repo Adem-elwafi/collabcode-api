@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CodeEditor, { type SaveStatus } from './CodeEditor';
 import StatusBar from './StatusBar';
-import UserList from './UserList';
+import Sidebar from './Sidebar';
 
 interface Props {
   roomId: string;
@@ -22,10 +22,14 @@ const MainLayout: React.FC<Props> = ({
   onUsersChange,
   onSaveStatusChange,
 }) => {
+  useEffect(() => {
+    document.title = `CollabCode | ${roomId}`;
+  }, [roomId]);
+
   return (
     <div className="mainLayout">
       <aside className="mainLayout__sidebar">
-        <UserList users={users} currentUser={currentUser} />
+        <Sidebar roomId={roomId} users={users} currentUser={currentUser} />
       </aside>
 
       <main className="mainLayout__content">

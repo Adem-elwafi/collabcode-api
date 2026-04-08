@@ -29,13 +29,135 @@
 }
 
 .codeEditorShell {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
 }
 
+.codeEditorShell__editor {
+  flex: 1;
+  min-height: 0;
+}
+
+.breadcrumbs {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  background: rgba(26, 26, 26, 0.95);
+  border-bottom: 1px solid var(--border);
+}
+
+.breadcrumbs__path {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.breadcrumbs__segment {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 0;
+}
+
+.breadcrumbs__segment:hover {
+  color: #e5e7eb;
+}
+
+.breadcrumbs__separator {
+  color: #6b7280;
+  font-size: 11px;
+}
+
+.breadcrumbs__copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: #d1d5db;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.breadcrumbs__copyBtn:hover {
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.sidebarPanel {
+  height: 100%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarPanel__roomCard {
+  border: 1px solid #3f3f46;
+  background: rgba(55, 65, 81, 0.4);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.sidebarPanel__roomRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+}
+
+.sidebarPanel__roomLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sidebarPanel__roomId {
+  color: #f1f5f9;
+  font-size: 13px;
+  margin-bottom: 10px;
+  word-break: break-word;
+}
+
+.sidebarPanel__shareBtn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #475569;
+  background: rgba(15, 23, 42, 0.6);
+  color: #dbeafe;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.sidebarPanel__shareBtn:hover {
+  border-color: #64748b;
+  background: rgba(30, 41, 59, 0.85);
+}
+
 .userList {
   height: 100%;
-  padding: 16px;
+  padding: 6px;
   color: var(--text);
 }
 
