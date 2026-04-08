@@ -1,6 +1,7 @@
 import React from 'react';
 import CodeEditor, { type SaveStatus } from './CodeEditor';
 import StatusBar from './StatusBar';
+import UserList from './UserList';
 
 interface Props {
   roomId: string;
@@ -11,28 +12,6 @@ interface Props {
   onUsersChange: React.Dispatch<React.SetStateAction<string[]>>;
   onSaveStatusChange: (status: SaveStatus) => void;
 }
-
-const UserList: React.FC<{ users: string[]; currentUser: string }> = ({ users, currentUser }) => {
-  return (
-    <aside className="userList">
-      <div className="userList__title">Active Users</div>
-
-      <div className="userList__self">You: {currentUser}</div>
-
-      {users.length === 0 ? (
-        <div className="userList__empty">No other users online</div>
-      ) : (
-        <ul className="userList__items">
-          {users.map((user) => (
-            <li key={user} className={user === currentUser ? 'userList__item userList__item--self' : 'userList__item'}>
-              {user === currentUser ? `${user} (you)` : user}
-            </li>
-          ))}
-        </ul>
-      )}
-    </aside>
-  );
-};
 
 const MainLayout: React.FC<Props> = ({
   roomId,

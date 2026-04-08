@@ -10,7 +10,7 @@ body {
   overflow: hidden;
   background: #121212;
   color: #f3f4f6;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', 'Roboto', 'Segoe UI', system-ui, sans-serif;
 }
 
 #root {
@@ -28,4 +28,5 @@ body {
   --accent: #3b82f6;
   --text: #e5e7eb;
   --muted: #94a3b8;
+  --border: #333333;
 }

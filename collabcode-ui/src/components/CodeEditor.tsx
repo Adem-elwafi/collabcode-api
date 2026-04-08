@@ -93,6 +93,7 @@ const CodeEditor: React.FC<Props> = ({ roomId, token, onUsersChange, onSaveStatu
         options={{
           minimap: { enabled: false },
           fontSize: 14,
+          fontFamily: 'JetBrains Mono, Fira Code, Cascadia Code, Consolas, monospace',
           automaticLayout: true,
         }}
       />
