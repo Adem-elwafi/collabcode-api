@@ -1,10 +1,16 @@
 # Frontend State Report
 
-Date: 2026-04-10
+Date: 2026-04-11
 
 ## Overview
 
-The frontend is currently a React 19 + TypeScript + Vite application built around a collaborative code editor experience with a JWT authentication foundation. The app now has dedicated login and signup screens, stores the access token locally, and only mounts the collaborative workspace when a valid session exists.
+The frontend is currently a React 19 + TypeScript + Vite application built around a collaborative code editor experience with a JWT authentication foundation. The app has dedicated login and signup screens, stores the access token locally, and now gates workspace mounting on confirmed WebSocket readiness.
+
+Sprint 2.1 (Sync & Recovery) is now integrated on the frontend:
+
+- Join flow waits for real socket connection success
+- Active room session is persisted in `sessionStorage` and auto-restored
+- Remote cursor movement is broadcast and rendered in Monaco via decorations
 
 The visual direction is a dark, modern interface with glassmorphism treatment on the entry card, layered gradients in the shell, and a short entrance transition when the editor mounts.
 
@@ -35,7 +41,7 @@ The join screen collects:
 - Username
 - Room ID
 
-When the user clicks Join Workspace, the app switches into a short loading state before revealing the editor workspace. This keeps the interaction responsive without requiring a separate motion library.
+When the user clicks Join Workspace, the app sets `isJoining=true`, opens a WebSocket connection, and only sets `isJoined=true` after `WebSocketService.connect(...)` resolves.
 
 If the URL contains `?room=XYZ`, the room field is prefilled from that query parameter so shared links can open directly into the same room.
 
@@ -57,6 +63,8 @@ Username persistence is handled through `localStorage` using the key `collabcode
 
 Room ID is kept in component state for the active session, but it now hydrates from the `room` query parameter and is cleared on Leave Room.
 
+The active room is now persisted with `sessionStorage` key `collabcode.activeRoomId` and is restored on app mount when both token and room are present.
+
 The access token is persisted separately through `localStorage` using `collabcode.accessToken` and is read by a shared fetch wrapper that automatically attaches `Authorization: Bearer ...` to protected requests.
 
 ### 3. Workspace Mounting
@@ -69,6 +77,12 @@ Once joined, the app renders `MainLayout`, which contains:
 
 The workspace container uses a simple CSS entrance animation so the editor fades/slides into view after join.
 
+Mounting behavior now supports session recovery:
+
+- If token + room session exist, App attempts websocket connect immediately
+- Join screen is bypassed on successful reconnect
+- Room session is cleared on leave or unauthenticated state
+
 ## Component Breakdown
 
 ### `App.tsx`
@@ -77,8 +91,10 @@ The top-level shell is responsible for:
 
 - Loading the saved username
 - Enforcing protected routes for `/login` and `/signup`
-- Managing join/loading state
+- Managing join/loading state tied to real socket readiness
 - Saving username updates to `localStorage`
+- Persisting active room ID in `sessionStorage`
+- Auto-restoring an active room session on mount
 - Switching between the join screen and the workspace
 - Passing room/user state into the editor layout
 - Reading the active token from `AuthContext`
@@ -125,10 +141,12 @@ The editor component remains the core collaboration surface.
 
 Current behavior:
 
-- Connects to the backend WebSocket service with the JWT token
-- Subscribes to room updates after a short delay
+- Subscribes to room updates through an already-connected websocket session
 - Handles JOIN and LEAVE presence messages
 - Handles CODE_UPDATE payloads
+- Listens to Monaco `onDidChangeCursorPosition`
+- Publishes `CURSOR_MOVE` events with `lineNumber` and `column`
+- Renders remote cursors from other users with `editor.deltaDecorations`
 - Keeps the local editor content and save state in sync
 
 ### `Sidebar.tsx`
@@ -158,9 +176,11 @@ The websocket layer is a singleton service built on STOMP over SockJS.
 
 Current responsibilities:
 
-- Connect with a Bearer JWT header
+- Connect with a Bearer JWT header and return a `Promise<void>` that resolves on STOMP `onConnect`
 - Subscribe to room topics
 - Publish editor updates
+- Publish cursor updates (`CURSOR_MOVE`)
+- Expose room unsubscription for editor lifecycle cleanup
 - Cleanly disconnect and unsubscribe on teardown
 
 Outbound editor payloads now use the active `currentUser` as the sender instead of a hardcoded placeholder.
@@ -202,10 +222,11 @@ What is persisted:
 
 - Username in `localStorage`
 - Access token in `localStorage`
+- Active room ID in `sessionStorage`
 
 What is not persisted yet:
-- Join/session state across refreshes
 - Room editor session state across refreshes
+- Full unsaved editor buffer snapshot across refreshes
 
 Current connection assumptions:
 
@@ -219,16 +240,16 @@ Current connection assumptions:
 
 The frontend was validated with a successful production build:
 
-- `npm run build` completed successfully
+- `npm run build` completed successfully on 2026-04-11
 
 ## Known Gaps
 
 These are the main follow-up items if the frontend is meant to become production-ready:
 
-- The loading delay is fixed rather than tied to actual websocket connection readiness
-- Join/session state is still not restored across refreshes
 - The current auth flow still relies on browser redirects instead of a router-driven navigation stack
+- Remote cursor styling currently uses a single color for all users (no per-user color mapping)
+- Backend enum support must include `CURSOR_MOVE` for end-to-end cursor sync
 
 ## Summary
 
-The frontend is now structured around a proper entry portal, persistent username capture, URL-aware room hydration, and a JWT-backed auth flow. The current implementation is stable and compiles successfully, with protected routing and token persistence now in place.
+The frontend is now structured around a proper entry portal, persistent username capture, URL-aware room hydration, and a JWT-backed auth flow. With Sprint 2.1, join now waits for true WebSocket readiness, room sessions are recoverable after refresh, and real-time remote cursor indicators are integrated into the collaborative editor.
